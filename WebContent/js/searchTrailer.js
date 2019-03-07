@@ -1,7 +1,6 @@
 M.AutoInit();
 
-//var SuggestionData = {"Apple": null, "Microsoft": null, "Google": 'https://placehold.it/250x250', "Goo": null,};
-//var SuggestionData = {"Tong hau goo si":"N/A","Goo Goo Dolls Live in Buffalo":"N/A","Goo Goo Dolls: Live at Red Rocks":"N/A","Goo":"N/A","Goo Goo Goliath":"https://m.media-amazon.com/images/M/MV5BNTMyOTgzMmQtNWYwZi00OTM1LWJmZmEtNmU0ZTM5MTRiNzU5XkEyXkFqcGdeQXVyMDM0MzU2NA@@._V1_SX300.jpg","The Duke of Goo":"N/A","Lik goo lik goo dui dui pong":"https://images-na.ssl-images-amazon.com/images/M/MV5BOTVlYjgxYTUtMDc2MS00NjQ0LTllMDEtMzlkZTc3Yjk4OTcyXkEyXkFqcGdeQXVyMzU0NzkwMDg@._V1_SX300.jpg"};
+var suggestionData;
 
 /**
  * To replace {{keys}} from an HTML template with formatted JSON data.
@@ -22,11 +21,10 @@ function updateMovieSuggestions(){
 		contentType: "application/json; charset=utf-8",
 		dataType: "html",
 		success: function (resultData) {
+			suggestionData = resultData;
 			$(document).ready(function(){
-				console.log("*******update*******\n"+resultData);
 				$('input.autocomplete').autocomplete({
-					data: resultData,
-//					data: SuggestionData,
+					data: JSON.parse(resultData),
 				});
 			});
 		},
@@ -42,25 +40,28 @@ function updateMovieSuggestions(){
  */
 function searchVideo() {
 	var searchKey = document.querySelector("input[name='search-input']").value.replace(/ /g, "+");
-	console.log(searchKey);
-	var request = gapi.client.youtube.search.list({
-		q: searchKey+"+Trailer",
-		type: "video",
-		maxResults: 4,
-		part: 'snippet'
-	});
-
-	request.execute(function(response) {
-		var results = response.result;
+	if(suggestionData === "null"){
 		$('#video-container').empty();
-		$.each(results.items, function(index, item) {
-			var videoId = item.id.videoId;
-			var videoTitle = item.snippet.title;
-			$.get("displayVideo.html", function(data) {
-				$('#video-container').append(tplawesome(data,[{"videoTitle":videoTitle, "videoId":videoId}]));
+		$('#video-container').append("<br></br><h5>Cound not match the movie name with given search key.</h5><br></br><i class='large material-icons'>sentiment_dissatisfied</i>");
+	}else{
+		var request = gapi.client.youtube.search.list({
+			q: searchKey+"+Trailer",
+			type: "video",
+			maxResults: 4,
+			part: 'snippet'
+		});
+		request.execute(function(response) {
+			var results = response.result;
+			$('#video-container').empty();
+			$.each(results.items, function(index, item) {
+				var videoId = item.id.videoId;
+				var videoTitle = item.snippet.title;
+				$.get("displayVideo.html", function(data) {
+					$('#video-container').append(tplawesome(data,[{"videoTitle":videoTitle, "videoId":videoId}]));
+				});
 			});
 		});
-	});
+	}
 }
 
 /**

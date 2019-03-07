@@ -22,11 +22,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
+
+/**
+ * SearchMovieServlet class is used to receive requests from web server, process the data and send movie title data based on search key.
+ * 
+ * @author Madhuri Pothulaboguda
+ */
+
 @WebServlet(name="searchMovieTrailer", urlPatterns = { "/searchMovieTrailer/*" })
 public class SearchMovieServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The doGet to receive requests from web server.
+	 *
+	 * @param request
+	 * @param response
+	 * @throws ServletException, IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
@@ -50,9 +64,15 @@ public class SearchMovieServlet extends HttpServlet{
 		try {
 			Map<String,List<Map<String,String>>> rawResultMap = mapper.readValue(rawDataString, Map.class);
 			List<Map<String,String>> omdbDataList = rawResultMap.get("Search");
-			//{"Response":"False","Error":"Too many results."}
-			if(Objects.isNull(omdbDataList)) {
-				return Collections.emptyMap();
+			if(Objects.isNull(omdbDataList) && String.valueOf(rawResultMap.get("Response")).equalsIgnoreCase("False")) {
+				//{"Response":"False","Error":"Movie not found!"}
+				if(String.valueOf(rawResultMap.get("Error")).equalsIgnoreCase("Movie not found!")) {
+					return null;
+				}
+				//{"Response":"False","Error":"Too many results."}
+				else { 	
+					return Collections.emptyMap();
+				}
 			}else {
 				Map<String, String> movieTitlePosterMap = omdbDataList.stream()
 						.filter(omdbData -> omdbData.get("Type").equalsIgnoreCase("Movie"))
