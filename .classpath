@@ -48,5 +48,11 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.fasterxml.jackson.annotations.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.fasterxml.jackson.core.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.fasterxml.jackson.csv.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/com.fasterxml.jackson.databind.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
